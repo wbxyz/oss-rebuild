@@ -349,7 +349,7 @@ var runOne = &cobra.Command{
 		} else {
 			client = http.DefaultClient
 		}
-		var strategy *schema.StrategyOneOf
+		opts := benchmark.RunBenchOpts{}
 		if *strategyPath != "" {
 			if mode == benchmark.AttestMode {
 				log.Fatal("--strategy not supported in attest mode, use --strategy-from-repo")
@@ -359,8 +359,8 @@ var runOne = &cobra.Command{
 				return
 			}
 			defer f.Close()
-			strategy = &schema.StrategyOneOf{}
-			err = yaml.NewDecoder(f).Decode(strategy)
+			opts.Strategy = &schema.StrategyOneOf{}
+			err = yaml.NewDecoder(f).Decode(opts.Strategy)
 			if err != nil {
 				log.Fatal(errors.Wrap(err, "reading strategy file"))
 			}
@@ -380,7 +380,7 @@ var runOne = &cobra.Command{
 				},
 			},
 		}
-		verdictChan, err := benchmark.RunBench(ctx, client, apiURL, set, benchmark.RunBenchOpts{})
+		verdictChan, err := benchmark.RunBench(ctx, client, apiURL, set, opts)
 		if err != nil {
 			log.Fatal(errors.Wrap(err, "running benchmark"))
 		}

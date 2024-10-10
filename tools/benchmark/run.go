@@ -101,6 +101,7 @@ type workerConfig struct {
 
 type attestWorker struct {
 	workerConfig
+	useNetworkProxy bool
 }
 
 var _ packageWorker = &attestWorker{}
@@ -112,10 +113,11 @@ func (w *attestWorker) ProcessOne(ctx context.Context, p Package, out chan schem
 		<-w.limiters[p.Ecosystem]
 		var errMsg string
 		req, err := makeHTTPRequest(ctx, w.url.JoinPath("rebuild"), &schema.RebuildPackageRequest{
-			Ecosystem: rebuild.Ecosystem(p.Ecosystem),
-			Package:   p.Name,
-			Version:   v,
-			ID:        w.run,
+			Ecosystem:       rebuild.Ecosystem(p.Ecosystem),
+			Package:         p.Name,
+			Version:         v,
+			ID:              w.run,
+			UseNetworkProxy: w.useNetworkProxy,
 		})
 		if err != nil {
 			errMsg = errors.Wrap(err, "making request").Error()
@@ -154,7 +156,8 @@ func (w *attestWorker) ProcessOne(ctx context.Context, p Package, out chan schem
 
 type smoketestWorker struct {
 	workerConfig
-	warmup bool
+	warmup   bool
+	strategy *schema.StrategyOneOf
 }
 
 func (w *smoketestWorker) Setup(ctx context.Context) {
@@ -181,6 +184,7 @@ func (w *smoketestWorker) ProcessOne(ctx context.Context, p Package, out chan sc
 		Package:   p.Name,
 		Versions:  p.Versions,
 		ID:        w.run,
+		Strategy:  w.strategy,
 	})
 	if err != nil {
 		errMsg = errors.Wrap(err, "making request").Error()
@@ -233,8 +237,10 @@ func isCloudRun(u *url.URL) bool {
 type RunBenchOpts struct {
 	Mode BenchmarkMode
 	// RunID is the ID for this run. Leave blank for one to be generated.
-	RunID          string
-	MaxConcurrency int
+	RunID           string
+	MaxConcurrency  int
+	Strategy        *schema.StrategyOneOf
+	UseNetworkProxy bool
 }
 
 func RunBench(ctx context.Context, client *http.Client, apiURL *url.URL, set PackageSet, opts RunBenchOpts) (<-chan schema.Verdict, error) {
@@ -252,10 +258,12 @@ func RunBench(ctx context.Context, client *http.Client, apiURL *url.URL, set Pac
 		ex.Worker = &smoketestWorker{
 			workerConfig: conf,
 			warmup:       isCloudRun(apiURL),
+			strategy:     opts.Strategy,
 		}
 	} else if opts.Mode == AttestMode {
 		ex.Worker = &attestWorker{
-			workerConfig: conf,
+			workerConfig:    conf,
+			useNetworkProxy: opts.UseNetworkProxy,
 		}
 	} else {
 		return nil, fmt.Errorf("invalid mode: %s", string(opts.Mode))

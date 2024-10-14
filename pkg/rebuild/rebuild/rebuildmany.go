@@ -24,6 +24,7 @@ import (
 	"time"
 
 	billy "github.com/go-git/go-billy/v5"
+	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-billy/v5/osfs"
 	"github.com/go-git/go-billy/v5/util"
 	git "github.com/go-git/go-git/v5"
@@ -75,16 +76,7 @@ func RebuildMany(ctx context.Context, rebuilder Rebuilder, inputs []Input, regis
 			return nil, errors.Wrap(err, "failed to chroot to srcPath")
 		}
 	}
-	// TODO: Use the fs passed into Rebuild many rather than osfs.New(".")
-	assetDir, ok := ctx.Value(AssetDirID).(string)
-	if !ok {
-		return nil, errors.New("no asset dir provided")
-	}
-	assetsFS, err := osfs.New(".").Chroot(assetDir)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to chroot to assets")
-	}
-	localAssets := NewFilesystemAssetStore(assetsFS)
+	localAssets := NewFilesystemAssetStore(memfs.New())
 	debugStorer, err := DebugStoreFromContext(ctx)
 	if err == ErrNoUploadPath {
 		debugStorer = nil
@@ -154,7 +146,6 @@ func RebuildMany(ctx context.Context, rebuilder Rebuilder, inputs []Input, regis
 	}
 	if retain, ok := ctx.Value(RetainArtifactsID).(bool); ok && !retain {
 		util.RemoveAll(fs, fs.Root())
-		util.RemoveAll(assetsFS, assetsFS.Root())
 	}
 	// For builds that re-used the previous repo, track the previous clone time.
 	for i := range verdicts {

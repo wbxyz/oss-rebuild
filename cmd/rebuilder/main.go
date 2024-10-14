@@ -39,7 +39,6 @@ var (
 	defaultVersionCount = flag.Int("default-version-count", 5, "The number of versions to rebuild if no version is provided")
 	useTimewarp         = flag.Bool("timewarp", true, "whether to use launch an instance of the timewarp server")
 	timewarpPort        = flag.Int("timewarp-port", 8081, "the port for timewarp to serve on")
-	localAssetDir       = flag.String("asset-dir", "assets", "the directory into which local assets will be stored")
 )
 
 var httpcfg = httpegress.Config{}
@@ -73,7 +72,6 @@ func RebuildSmoketestInit(ctx context.Context) (*rebuilderservice.RebuildSmokete
 	if *debugStorage != "" {
 		d.DebugStorage = debugStorage
 	}
-	d.AssetDir = *localAssetDir
 	d.DefaultVersionCount = *defaultVersionCount
 	return &d, nil
 }

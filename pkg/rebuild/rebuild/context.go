@@ -19,7 +19,6 @@ type ctxKey int
 
 const (
 	RetainArtifactsID ctxKey = iota
-	AssetDirID
 	UploadArtifactsPathID
 	DebugStoreID
 	RepoCacheClientID

@@ -105,7 +105,6 @@ func doMavenRebuildSmoketest(ctx context.Context, req schema.SmoketestRequest, v
 type RebuildSmoketestDeps struct {
 	HTTPClient          httpx.BasicClient
 	GitCache            *gitx.Cache
-	AssetDir            string
 	TimewarpURL         *string
 	DebugStorage        *string
 	DefaultVersionCount int
@@ -126,7 +125,6 @@ func RebuildSmoketest(ctx context.Context, sreq schema.SmoketestRequest, deps *R
 	if deps.TimewarpURL != nil {
 		ctx = context.WithValue(ctx, rebuild.TimewarpID, *deps.TimewarpURL)
 	}
-	ctx = context.WithValue(ctx, rebuild.AssetDirID, deps.AssetDir)
 	if deps.DebugStorage != nil {
 		ctx = context.WithValue(ctx, rebuild.UploadArtifactsPathID, *deps.DebugStorage)
 	}

@@ -560,6 +560,10 @@ func NewTuiApp(ctx context.Context, fireClient rundex.Reader, firestoreOpts rund
 		container := tview.NewPages().AddPage("main window", window, true, true)
 		root = container
 	}
+	root.SetDrawFunc(func(screen tcell.Screen, x, y, width, height int) (int, int, int, int) {
+		screen.HideCursor()
+		return x, y, width, height
+	})
 	t.root = root
 	t.app.SetRoot(root, true).SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyCtrlC {

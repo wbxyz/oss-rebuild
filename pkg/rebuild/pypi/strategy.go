@@ -36,6 +36,9 @@ func (b *PureWheelBuild) GenerateFor(t rebuild.Target, be rebuild.BuildEnv) (reb
 	}
 	deps, err := rebuild.PopulateTemplate(`
 /usr/bin/python3 -m venv /deps
+pip config --user set global.index {{.BuildEnv.TimewarpURL "pypi" .RegistryTime}}
+pip config --user set global.index-url {{.BuildEnv.TimewarpURL "pypi" .RegistryTime}}
+pip config --user set global.trusted-host {{.BuildEnv.TimewarpURL}}
 /deps/bin/pip install build
 {{range .Requirements -}}
 /deps/bin/pip install {{.}}

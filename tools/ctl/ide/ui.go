@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,6 +38,7 @@ import (
 	"github.com/google/oss-rebuild/internal/gcb"
 	"github.com/google/oss-rebuild/pkg/rebuild/rebuild"
 	"github.com/google/oss-rebuild/pkg/rebuild/schema"
+	debianreg "github.com/google/oss-rebuild/pkg/registry/debian"
 	"github.com/google/oss-rebuild/tools/benchmark"
 	"github.com/google/oss-rebuild/tools/ctl/localfiles"
 	"github.com/google/oss-rebuild/tools/ctl/rundex"
@@ -159,26 +161,39 @@ func diffArtifacts(ctx context.Context, example rundex.Rebuild) {
 		log.Println(errors.Wrap(err, "failed to create debug asset store"))
 		return
 	}
+	r, _ := debugAssets.Reader(ctx, rebuild.Asset{Target: t, Type: rebuild.BuildInfoAsset})
+	bi := rebuild.BuildInfo{}
+	json.NewDecoder(r).Decode(&bi)
+	metadata, _ := rebuild.NewGCSStore(context.WithValue(ctx, rebuild.RunID, bi.ID), "gs://rebuild-metadata")
 	// TODO: Clean up these artifacts.
-	// TODO: Check if these are already downloaded.
-	rebuildAsset := rebuild.DebugRebuildAsset.For(t)
+	rebuildAsset := rebuild.RebuildAsset.For(t)
 	upstreamAsset := rebuild.DebugUpstreamAsset.For(t)
 	rba := localAssets.URL(rebuildAsset).Path
 	usa := localAssets.URL(upstreamAsset).Path
 	if _, err := os.Stat(rba); errors.Is(err, os.ErrNotExist) {
-		if err := rebuild.AssetCopy(ctx, localAssets, debugAssets, rebuildAsset); err != nil {
+		if err := rebuild.AssetCopy(ctx, localAssets, metadata, rebuildAsset); err != nil {
 			log.Println(errors.Wrap(err, "failed to copy rebuild asset"))
 			return
 		}
 	}
 	if _, err := os.Stat(usa); errors.Is(err, os.ErrNotExist) {
-		if err := rebuild.AssetCopy(ctx, localAssets, debugAssets, upstreamAsset); err != nil {
-			log.Println(errors.Wrap(err, "failed to copy upstream asset"))
+		fields := strings.SplitN(t.Package, "/", 2)
+		component := fields[0]
+		name := fields[1]
+		upstreamURL := debianreg.PoolURL(component, name, t.Artifact)
+		w, _ := localAssets.Writer(ctx, upstreamAsset)
+		defer w.Close()
+		req, _ := http.NewRequest(http.MethodGet, upstreamURL, nil)
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Println(errors.Wrap(err, "failed to download upstream artifact"))
 			return
 		}
+		defer resp.Body.Close()
+		io.Copy(w, resp.Body)
 		log.Printf("downloaded rebuild and upstream:\n\t%s\n\t%s", rba, usa)
 	}
-	cmd := exec.Command("tmux", "new-window", fmt.Sprintf("diffoscope --text-color=always %s %s | less -R", rba, usa))
+	cmd := exec.Command("tmux", "new-window", fmt.Sprintf("diffoscope --text-color=always %s %s 2>&1 | less -R", rba, usa))
 	if err := cmd.Run(); err != nil {
 		log.Println(errors.Wrap(err, "failed to run diffoscope"))
 		if err.Error() == "exit status 1" {

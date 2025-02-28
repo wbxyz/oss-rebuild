@@ -32,6 +32,10 @@ import (
 	"github.com/google/oss-rebuild/internal/textwrap"
 	"github.com/google/oss-rebuild/pkg/rebuild/rebuild"
 	"github.com/google/oss-rebuild/pkg/rebuild/schema"
+	cratesreg "github.com/google/oss-rebuild/pkg/registry/cratesio"
+	debianreg "github.com/google/oss-rebuild/pkg/registry/debian"
+	npmreg "github.com/google/oss-rebuild/pkg/registry/npm"
+	pypireg "github.com/google/oss-rebuild/pkg/registry/pypi"
 	"github.com/google/oss-rebuild/tools/benchmark"
 	"github.com/google/oss-rebuild/tools/ctl/ide"
 	"github.com/google/oss-rebuild/tools/ctl/localfiles"
@@ -140,7 +144,7 @@ var tui = &cobra.Command{
 }
 
 var getResults = &cobra.Command{
-	Use:   "get-results -project <ID> -run <ID> [-bench <benchmark.json>] [-filter <verdict>] [-sample N] [-format=summary|bench]",
+	Use:   "get-results -project <ID> -run <ID> [-bench <benchmark.json>] [-filter <verdict>] [-sample N] [-format=summary|bench] [-asset=<assetType>]",
 	Short: "Analyze rebuild results",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -218,6 +222,28 @@ var getResults = &cobra.Command{
 				log.Fatal(errors.Wrap(err, "marshalling benchmark"))
 			}
 			fmt.Println(string(b))
+		case "assets":
+			regclient := http.DefaultClient
+			mux := rebuild.RegistryMux{
+				Debian:   debianreg.HTTPRegistry{Client: regclient},
+				CratesIO: cratesreg.HTTPRegistry{Client: regclient},
+				NPM:      npmreg.HTTPRegistry{Client: regclient},
+				PyPI:     pypireg.HTTPRegistry{Client: regclient},
+			}
+			lc := localfiles.NewLocalCache(*metadataBucket, *logsBucket, *debugStorage, mux)
+			for _, r := range rebuilds {
+				t := rebuild.Target{
+					Ecosystem: rebuild.Ecosystem(r.Ecosystem),
+					Package:   r.Package,
+					Version:   r.Version,
+					Artifact:  r.Artifact,
+				}
+				path, err := lc.Fetch(cmd.Context(), *runFlag, false, rebuild.TetragonLogAsset.For(t))
+				if err != nil {
+					log.Println(err)
+				}
+				cmd.OutOrStdout().Write([]byte(path + "\n"))
+			}
 		default:
 			log.Fatalf("Unknown --format type: %s", *format)
 		}
@@ -655,6 +681,9 @@ func init() {
 	getResults.Flags().AddGoFlag(flag.Lookup("project"))
 	getResults.Flags().AddGoFlag(flag.Lookup("clean"))
 	getResults.Flags().AddGoFlag(flag.Lookup("format"))
+	getResults.Flags().AddGoFlag(flag.Lookup("debug-storage"))
+	getResults.Flags().AddGoFlag(flag.Lookup("logs-bucket"))
+	getResults.Flags().AddGoFlag(flag.Lookup("metadata-bucket"))
 
 	tui.Flags().AddGoFlag(flag.Lookup("project"))
 	tui.Flags().AddGoFlag(flag.Lookup("debug-storage"))

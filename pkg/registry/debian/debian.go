@@ -6,6 +6,7 @@ package debian
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -19,7 +20,9 @@ import (
 var (
 	registryURL         = "https://deb.debian.org/debian/pool/"
 	buildinfoURL        = "https://buildinfos.debian.net/buildinfo-pool/"
+	snapshotURL         = "https://snapshot.debian.org/"
 	binaryReleaseRegexp = regexp.MustCompile(`(\+b[\d\.]+)$`)
+	versionRegex        = regexp.MustCompile(`^(?P<name>[^_]+)_(?P<nonbinary_version>[^_+]+)(?P<binary_version>\+.*)?_(?P<arch>[^_]+)\.deb$`)
 )
 
 type ControlStanza struct {
@@ -147,9 +150,87 @@ func (r HTTPRegistry) DSC(ctx context.Context, component, name, version string) 
 	return DSCURI, d, err
 }
 
+type DebianArtifact struct {
+	// Name is the name of the artifact (different from the source package)
+	Name string
+	// NonBinaryVersion is the version string, stripped of any binary-only suffix
+	NonBinaryVersion string
+	// BinaryVersion contains any binary-only suffix
+	BinaryVersion string
+	// Arch is the target architecture
+	Arch string
+}
+
+func ParseDebianArtifact(artifact string) (DebianArtifact, error) {
+	matches := versionRegex.FindStringSubmatch(artifact)
+	if matches == nil {
+		return DebianArtifact{}, errors.Errorf("unexpected artifact name: %s", artifact)
+	}
+	a := DebianArtifact{
+		Name:             matches[versionRegex.SubexpIndex("name")],
+		NonBinaryVersion: matches[versionRegex.SubexpIndex("nonbinary_version")],
+		BinaryVersion:    matches[versionRegex.SubexpIndex("binary_version")],
+		Arch:             matches[versionRegex.SubexpIndex("arch")],
+	}
+	if strings.HasPrefix(a.BinaryVersion, "+deb") {
+		a.NonBinaryVersion += a.BinaryVersion
+		a.BinaryVersion = ""
+	}
+	return a, nil
+}
+
+// fileInfo is the response from the binfiles endpoint on the snapshot service.
+type fileInfo struct {
+	// FileInfo is a map from file hash to extra info
+	FileInfo map[string][]struct {
+		Name string
+	}
+	// Result is a list of file hashes with architecture
+	Result []struct {
+		Architecture string
+		Hash         string
+	}
+}
+
 // Artifact returns the package artifact for the given package version.
 func (r HTTPRegistry) Artifact(ctx context.Context, component, name, artifact string) (io.ReadCloser, error) {
-	return r.get(ctx, PoolURL(component, name, artifact))
+	// Example series of urls to follow:
+	// https://snapshot.debian.org/mr/binary/acl/
+	// https://snapshot.debian.org/mr/package/acl/2.3.2-2/binfiles/libacl1/2.3.2-2+b1?fileinfo=1
+	// https://snapshot.debian.org/file/53f2b0612c8ed8a60970f9a206ae65eb84681f6e
+	a, err := ParseDebianArtifact(artifact)
+	if err != nil {
+		return nil, err
+	}
+	var response fileInfo
+	{
+		r, err := r.get(ctx, fmt.Sprintf("%s/mr/package/%s/%s/binfiles/%s/%s%s?fileinfo=1", snapshotURL, name, a.NonBinaryVersion, a.Name, a.NonBinaryVersion, a.BinaryVersion))
+		if err != nil {
+			return nil, err
+		}
+		defer r.Close()
+		if err = json.NewDecoder(r).Decode(&response); err != nil {
+			return nil, err
+		}
+	}
+	var hash string
+	for _, f := range response.Result {
+		if f.Architecture == a.Arch {
+			hash = f.Hash
+			break
+		}
+	}
+	if hash == "" {
+		return nil, errors.New("no matching architecture found")
+	}
+	// Verify we found the correct artifact
+	{
+		found, ok := response.FileInfo[hash]
+		if !ok || len(found) != 1 || found[0].Name != artifact {
+			return nil, errors.Errorf("artifact name doesn't match, want %s, found: %+v", artifact, found)
+		}
+	}
+	return r.get(ctx, fmt.Sprintf("%s/file/%s", snapshotURL, hash))
 }
 
 var _ Registry = &HTTPRegistry{}

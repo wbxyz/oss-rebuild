@@ -80,3 +80,89 @@ func Parse(r io.Reader) (*ControlFile, error) {
 
 	return &d, nil
 }
+
+type BuildInfo struct {
+	Format                string
+	Source                string
+	Binary                []string
+	Architecture          string
+	HostArchitecture      string
+	Version               string
+	BinaryOnlyChanges     string
+	ChecksumsMd5          []string
+	ChecksumsSha1         []string
+	ChecksumsSha256       []string
+	BuildOrigin           string
+	BuildArchitecture     string
+	BuildDate             string
+	BuildKernelVersion    string
+	BuildPath             string
+	BuildTaintedBy        string
+	InstalledBuildDepends []string
+	Environment           []string
+}
+
+func ParseBuildInfo(r io.Reader) (*BuildInfo, error) {
+	ctrl, err := Parse(r)
+	if err != nil {
+		return nil, err
+	}
+	if len(ctrl.Stanzas) == 2 {
+		// skip the "Hash" stanza if present
+		if _, ok := ctrl.Stanzas[0].Fields["Hash"]; ok {
+			ctrl.Stanzas = ctrl.Stanzas[1:]
+		}
+	}
+	if len(ctrl.Stanzas) != 1 {
+		return nil, errors.Errorf("unexpected number of stanzas: %d", len(ctrl.Stanzas))
+	}
+	bi := BuildInfo{}
+	stanza := ctrl.Stanzas[0]
+	for field, values := range stanza.Fields {
+		v := strings.Join(values, "\n")
+		switch field {
+		case "Format":
+			bi.Format = v
+		case "Source":
+			bi.Source = v
+		case "Binary":
+			bi.Binary = values
+		case "Architecture":
+			bi.Architecture = v
+		case "Host-Architecture":
+			bi.HostArchitecture = v
+		case "Version":
+			bi.Version = v
+		case "Binary-Only-Changes":
+			bi.BinaryOnlyChanges = v
+		case "Checksums-Md5":
+			bi.ChecksumsMd5 = values
+		case "Checksums-Sha1":
+			bi.ChecksumsSha1 = values
+		case "Checksums-Sha256":
+			bi.ChecksumsSha256 = values
+		case "Build-Origin":
+			bi.BuildOrigin = v
+		case "Build-Architecture":
+			bi.BuildArchitecture = v
+		case "Build-Date":
+			bi.BuildDate = v
+		case "Build-Kernel-Version":
+			bi.BuildKernelVersion = v
+		case "Build-Path":
+			bi.BuildPath = v
+		case "Build-Tainted-By":
+			bi.BuildTaintedBy = v
+		case "Installed-Build-Depends":
+			bi.InstalledBuildDepends = []string{}
+			for _, val := range values {
+				bi.InstalledBuildDepends = append(bi.InstalledBuildDepends, strings.TrimSuffix(strings.TrimSpace(val), ","))
+			}
+		case "Environment":
+			bi.Environment = values
+		default:
+			return nil, errors.Errorf("unexpected field: %s", field)
+		}
+	}
+	return &bi, nil
+}

@@ -120,6 +120,7 @@ func (b *Debrebuild) GenerateFor(t rebuild.Target, be rebuild.BuildEnv) (rebuild
 // DebootsnapSbuild uses debootsnap sbuild to perform a rebuild.
 type DebootsnapSbuild struct {
 	BuildInfo                FileWithChecksum `json:"buildinfo" yaml:"buildinfo,omitempty"`
+	BuildInfoContent         string           `json:"buildInfoContent" yaml:"buildInfoContent,omitempty"`
 	BuildArchAll             bool             `json:"buildArchAll" yaml:"buildArchAll,omitempty"`
 	BuildArchAny             bool             `json:"buildArchAny" yaml:"buildArchAny,omitempty"`
 	BuildArch                string           `json:"buildArch" yaml:"buildArch,omitempty"`
@@ -145,11 +146,11 @@ func (b *DebootsnapSbuild) ToWorkflow() *rebuild.WorkflowStrategy {
 				},
 			},
 			{
-				Uses: "debian/fetch/buildinfo",
-				With: map[string]string{
-					"buildinfoUrl": b.BuildInfo.URL,
-					"buildinfoMd5": b.BuildInfo.MD5,
-				},
+				// TODO: Indent the buildinfo
+				// TODO: This removes the final system dep, we need to either fix empty system deps for gcb, or convert the deps/install to use system deps
+				// We write the buildinfo file to disk using a heredoc.
+				// This avoids needing to fetch it from the network again.
+				Runs: fmt.Sprintf("cat << 'EOF' > %s\n%s\nEOF", path.Base(b.BuildInfo.URL), b.BuildInfoContent),
 			},
 			{
 				Uses: "debian/fetch/dsc",

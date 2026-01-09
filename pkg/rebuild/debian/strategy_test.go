@@ -304,6 +304,7 @@ func TestDebootsnapSbuild(t *testing.T) {
 					URL: "http://example.com/pkg.buildinfo",
 					MD5: "md5",
 				},
+				BuildInfoContent:         "<build info content>",
 				BuildArchAll:             true,
 				BuildArchAny:             false,
 				BuildArch:                "amd64",
@@ -366,7 +367,7 @@ env --chdir=/src VAR=val SBUILD_CONFIG=/tmp/sbuild.config\
     "/src/pkg_1.0.dsc"
 `,
 				Requires: rebuild.RequiredEnv{
-					SystemDeps: []string{"wget"},
+					SystemDeps: []string{},
 					Privileged: true,
 				},
 				OutputPath: "pkg_1.0_amd64.deb",

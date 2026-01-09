@@ -145,12 +145,19 @@ func ParseDebianArtifact(artifact string) (ArtifactIdentifier, error) {
 	}, nil
 }
 
+// FetchedBuildInfo contains the URL, raw content, and parsed data of a buildinfo file.
+type FetchedBuildInfo struct {
+	URL     string
+	Content string
+	Data    *control.BuildInfo
+}
+
 // Registry is a debian package registry.
 type Registry interface {
 	ArtifactURL(context.Context, string, string) (string, error)
 	Artifact(context.Context, string, string, string) (io.ReadCloser, error)
 	DSC(context.Context, string, string, string) (string, *control.ControlFile, error)
-	BuildInfo(context.Context, string, string, string, string) (string, *control.BuildInfo, error)
+	BuildInfo(context.Context, string, string, string, string) (*FetchedBuildInfo, error)
 }
 
 // HTTPRegistry is a Registry implementation that uses the debian HTTP API.
@@ -192,19 +199,28 @@ func BuildInfoURL(name, version, arch string) string {
 	return u.String()
 }
 
-func (r HTTPRegistry) BuildInfo(ctx context.Context, component, name, version, arch string) (string, *control.BuildInfo, error) {
+func (r HTTPRegistry) BuildInfo(ctx context.Context, component, name, version, arch string) (*FetchedBuildInfo, error) {
 	v, err := ParseVersion(version)
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
 	buildinfoURL := BuildInfoURL(name, v.String(), arch)
 	log.Printf("Fetching buildinfo from %s", buildinfoURL)
 	re, err := r.get(ctx, buildinfoURL)
 	if err != nil {
-		return "", nil, errors.Wrapf(err, "failed to get .buildinfo file %s", buildinfoURL)
+		return nil, errors.Wrapf(err, "failed to get .buildinfo file %s", buildinfoURL)
 	}
-	b, err := control.ParseBuildInfo(re)
-	return buildinfoURL, b, err
+	defer re.Close()
+	content, err := io.ReadAll(re)
+	if err != nil {
+		return nil, errors.Wrap(err, "reading buildinfo content")
+	}
+	b, err := control.ParseBuildInfo(strings.NewReader(string(content)))
+	return &FetchedBuildInfo{
+		URL:     buildinfoURL,
+		Content: string(content),
+		Data:    b,
+	}, err
 }
 
 func guessDSCURL(component, name string, version *Version) string {

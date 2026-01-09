@@ -126,12 +126,13 @@ func inferDebootsnapSbuild(t rebuild.Target, mux rebuild.RegistryMux) (rebuild.S
 	}
 	// The buildinfo uses the *source* package name, and the entire version string (including binary-only upload components).
 	// This is because the buildinfo is versioned per build, not per source package release.
-	infoURL, info, err := mux.Debian.BuildInfo(context.Background(), component, name, a.Version.String(), a.Arch)
+	bi, err := mux.Debian.BuildInfo(context.Background(), component, name, a.Version.String(), a.Arch)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to fetch buildinfo")
 	}
+	info := bi.Data
 	// TODO: Populate the checksum
-	strat := DebootsnapSbuild{BuildInfo: FileWithChecksum{URL: infoURL, MD5: ""}}
+	strat := DebootsnapSbuild{BuildInfo: FileWithChecksum{URL: bi.URL, MD5: ""}, BuildInfoContent: bi.Content}
 	{ // Architecture
 		arches := strings.Fields(info.Architecture)
 		filteredArches := []string{}

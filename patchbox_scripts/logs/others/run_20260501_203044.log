@@ -1,0 +1,272 @@
+++ dirname ./patchbox_scripts/cron_others.sh
++ source ./patchbox_scripts/common.sh
+++ TFVARS=deployments/ssci-demos.tfvars
+++ PROJECT=oss-rebuild-corprun-dev
+++ REGION=us-central1
++++ grep service_version deployments/ssci-demos.tfvars
++++ sed -E 's/.*"(.+)".*/\1/'
+++ VERSION=v0.0.0-20260422184726-3f1d2ee7d0cf
++++ grep service_commit deployments/ssci-demos.tfvars
++++ sed -E 's/.*"(.+)".*/\1/'
+++ COMMIT=3f1d2ee7d0cf28c20e9b3577957a164656b3196c
++++ git rev-parse --show-toplevel
+++ REPO_ROOT=/usr/local/google/home/williamburton/github/wbxyz/oss-rebuild
+++ REPO=file:///usr/local/google/home/williamburton/github/wbxyz/oss-rebuild
+++ REGISTRY=us-central1-docker.pkg.dev/oss-rebuild-corprun-dev/service-images
+++ SERVICE_ACCOUNT=patchbox-importer@oss-rebuild-corprun-dev.iam.gserviceaccount.com
+++ SSCI_PROJECT=ssci-demos
+++ SSCI_REGISTRY=us-central1-docker.pkg.dev/ssci-demos/service-images
++ echo 'Starting nanny for others...'
+Starting nanny for others...
++ go run ./cmd/patchbox_nanny --firestore_project=ssci-demos --cloud_run_project=oss-rebuild-corprun-dev --bench=tools/benchmark/data/experimental/mender_q1.json --since=24h --output_dir_base=gs://oss-rebuild-dev-patchbox
+2026/05/01 20:30:46 Finding runs created within the last 24h0m0s for benchmark mender_q1.json...
+2026/05/01 20:30:47 Fetching attempts for 4 recent runs...
+2026/05/01 20:30:47 Found 137 rebuilds matching criteria
+2026/05/01 20:30:48 Triggering composer for shaderc (Run: 2026-05-01T18:32:07Z, ObliviousID: 855ce046-fbe8-4cbf-99ab-f3aa79be6288)
+2026/05/01 20:30:49 Successfully triggered Cloud Run composer for shaderc
+2026/05/01 20:30:49 Triggering composer for gdal (Run: 2026-05-01T18:32:07Z, ObliviousID: 92f944b5-fbdc-4445-ae0b-16665c34102f)
+2026/05/01 20:30:49 Successfully triggered Cloud Run composer for gdal
+2026/05/01 20:30:50 Triggering composer for kde-thumbnailers (Run: 2026-05-01T18:32:07Z, ObliviousID: 37c9f66f-9940-4247-8a27-6dc7302fce06)
+2026/05/01 20:30:50 Successfully triggered Cloud Run composer for kde-thumbnailers
+2026/05/01 20:30:50 Skipping composer for rapidjson, already up to date.
+2026/05/01 20:30:51 Skipping composer for wasm3, already up to date.
+2026/05/01 20:30:51 Skipping composer for quickjs, already up to date.
+2026/05/01 20:30:51 Triggering composer for wamr (Run: 2026-05-01T18:32:07Z, ObliviousID: 1f0e45e2-be14-4dd9-9739-48233776d351)
+2026/05/01 20:30:51 Successfully triggered Cloud Run composer for wamr
+2026/05/01 20:30:52 Skipping composer for pcre2, already up to date.
+2026/05/01 20:30:52 Skipping composer for unit, already up to date.
+2026/05/01 20:30:52 Skipping composer for ox-ruby, already up to date.
+2026/05/01 20:30:53 Triggering composer for tinyusb (Run: 2026-05-01T18:32:07Z, ObliviousID: f1c50dce-6c40-452b-ba1a-5f85c52ec1ef)
+2026/05/01 20:30:53 Successfully triggered Cloud Run composer for tinyusb
+2026/05/01 20:30:53 Triggering composer for tarantool (Run: 2026-05-01T18:32:07Z, ObliviousID: 685d24f3-891b-4810-9ce2-6d88baf4a5a6)
+2026/05/01 20:30:54 Successfully triggered Cloud Run composer for tarantool
+2026/05/01 20:30:54 Triggering composer for openssl (Run: 2026-05-01T18:32:07Z, ObliviousID: 79199188-b7ac-42cb-96c7-1029a77ab9a9)
+2026/05/01 20:30:54 Successfully triggered Cloud Run composer for openssl
+2026/05/01 20:30:55 Skipping composer for openexr, already up to date.
+2026/05/01 20:30:55 Skipping composer for openbabel, already up to date.
+2026/05/01 20:30:55 Triggering composer for selinux (Run: 2026-05-01T18:32:07Z, ObliviousID: dee7d1f7-1569-48a1-a4ba-03d2a86591f0)
+2026/05/01 20:30:55 Successfully triggered Cloud Run composer for selinux
+2026/05/01 20:30:56 Skipping composer for ntopng, already up to date.
+2026/05/01 20:30:56 Skipping composer for njs, already up to date.
+2026/05/01 20:30:56 Skipping composer for relic, already up to date.
+2026/05/01 20:30:56 Skipping composer for readstat, already up to date.
+2026/05/01 20:30:57 Skipping composer for liblouis, already up to date.
+2026/05/01 20:30:57 Skipping composer for matio, already up to date.
+2026/05/01 20:30:57 Triggering composer for libssh2 (Run: 2026-05-01T18:32:07Z, ObliviousID: 961fa5ca-2f23-480c-99ee-2310739f5618)
+2026/05/01 20:30:58 Successfully triggered Cloud Run composer for libssh2
+2026/05/01 20:30:58 Triggering composer for libheif (Run: 2026-05-01T18:32:07Z, ObliviousID: ca26f543-becf-42e9-af04-d2025016347b)
+2026/05/01 20:30:58 Successfully triggered Cloud Run composer for libheif
+2026/05/01 20:30:58 Triggering composer for libdwarf (Run: 2026-05-01T18:32:07Z, ObliviousID: d4fe75a9-86ca-4ded-a407-45ddca284c2b)
+2026/05/01 20:30:59 Successfully triggered Cloud Run composer for libdwarf
+2026/05/01 20:30:59 Triggering composer for libconfig (Run: 2026-05-01T18:32:07Z, ObliviousID: 114408f4-8cbf-4864-808b-d178f3502c87)
+2026/05/01 20:30:59 Successfully triggered Cloud Run composer for libconfig
+2026/05/01 20:31:00 Triggering composer for libplist (Run: 2026-05-01T18:32:07Z, ObliviousID: 2d9408c9-5ede-4080-88cb-03878a450be4)
+2026/05/01 20:31:00 Successfully triggered Cloud Run composer for libplist
+2026/05/01 20:31:00 Skipping composer for libbpf, already up to date.
+2026/05/01 20:31:00 Skipping composer for libavc, already up to date.
+2026/05/01 20:31:01 Triggering composer for libarchive (Run: 2026-05-01T18:32:07Z, ObliviousID: 8399dc13-5a56-4aa6-8b1a-408e88ad4be7)
+2026/05/01 20:31:01 Successfully triggered Cloud Run composer for libarchive
+2026/05/01 20:31:01 Triggering composer for iperf (Run: 2026-05-01T18:32:07Z, ObliviousID: 5c95fbed-89f1-4f63-971c-fef7d0066851)
+2026/05/01 20:31:02 Successfully triggered Cloud Run composer for iperf
+2026/05/01 20:31:02 Triggering composer for grok (Run: 2026-05-01T18:32:07Z, ObliviousID: cad55784-bc0a-4df3-a100-ea40cc18aea0)
+2026/05/01 20:31:02 Successfully triggered Cloud Run composer for grok
+2026/05/01 20:31:02 Skipping composer for frr, already up to date.
+2026/05/01 20:31:03 Skipping composer for flex, already up to date.
+2026/05/01 20:31:03 Skipping composer for fio, already up to date.
+2026/05/01 20:31:03 Skipping composer for exiv2, already up to date.
+2026/05/01 20:31:04 Skipping composer for c-blosc2, already up to date.
+2026/05/01 20:31:04 Triggering composer for cairo (Run: 2026-05-01T18:32:07Z, ObliviousID: 0187ac0b-51a5-42ef-8861-bdbee54e5581)
+2026/05/01 20:31:04 Successfully triggered Cloud Run composer for cairo
+2026/05/01 20:31:04 Skipping composer for bios-bmc-smm-error-logger, already up to date.
+2026/05/01 20:31:05 Triggering composer for assimp (Run: 2026-05-01T18:32:07Z, ObliviousID: 8d6a5b79-1143-4931-8919-43cea42768fa)
+2026/05/01 20:31:05 Successfully triggered Cloud Run composer for assimp
+2026/05/01 20:31:05 Triggering composer for kde-thumbnailers (Run: 2026-05-01T12:32:00Z, ObliviousID: 684e1550-edfd-4836-bd5d-d54586371554)
+2026/05/01 20:31:05 Successfully triggered Cloud Run composer for kde-thumbnailers
+2026/05/01 20:31:06 Triggering composer for shaderc (Run: 2026-05-01T12:32:00Z, ObliviousID: 9886a6e3-6ecd-441e-8ddf-a4b1d5d207fd)
+2026/05/01 20:31:06 Successfully triggered Cloud Run composer for shaderc
+2026/05/01 20:31:06 Triggering composer for llvm (Run: 2026-05-01T12:32:00Z, ObliviousID: 698f1304-2cd2-4628-a8e1-82f2e2f2e11f)
+2026/05/01 20:31:07 Successfully triggered Cloud Run composer for llvm
+2026/05/01 20:31:07 Triggering composer for gdal (Run: 2026-05-01T12:32:00Z, ObliviousID: 2a56c7e9-63cf-4f23-944e-163a98d16f98)
+2026/05/01 20:31:07 Successfully triggered Cloud Run composer for gdal
+2026/05/01 20:31:07 Skipping composer for quickjs, already up to date.
+2026/05/01 20:31:08 Skipping composer for readstat, already up to date.
+2026/05/01 20:31:08 Triggering composer for rdkit (Run: 2026-05-01T12:32:00Z, ObliviousID: 24cb740e-128e-4c57-bbb4-fe8f9c3c1c72)
+2026/05/01 20:31:08 Successfully triggered Cloud Run composer for rdkit
+2026/05/01 20:31:08 Skipping composer for rapidjson, already up to date.
+2026/05/01 20:31:09 Skipping composer for pcre2, already up to date.
+2026/05/01 20:31:09 Skipping composer for wasm3, already up to date.
+2026/05/01 20:31:09 Skipping composer for ox-ruby, already up to date.
+2026/05/01 20:31:09 Triggering composer for wamr (Run: 2026-05-01T12:32:00Z, ObliviousID: 3b0b26d4-b47c-4f3f-9d72-fa426c43d2cd)
+2026/05/01 20:31:10 Successfully triggered Cloud Run composer for wamr
+2026/05/01 20:31:10 Triggering composer for openssl (Run: 2026-05-01T12:32:00Z, ObliviousID: e62dec9b-c9ce-4e5d-9167-0a4019a5ef0c)
+2026/05/01 20:31:11 Successfully triggered Cloud Run composer for openssl
+2026/05/01 20:31:11 Skipping composer for unit, already up to date.
+2026/05/01 20:31:11 Triggering composer for tinyusb (Run: 2026-05-01T12:32:00Z, ObliviousID: be233d11-b46f-4cea-9d6c-5375c4bd5be2)
+2026/05/01 20:31:11 Successfully triggered Cloud Run composer for tinyusb
+2026/05/01 20:31:12 Triggering composer for selinux (Run: 2026-05-01T12:32:00Z, ObliviousID: aa7abc76-caa6-4349-951c-564ee6b4e162)
+2026/05/01 20:31:12 Successfully triggered Cloud Run composer for selinux
+2026/05/01 20:31:12 Triggering composer for openexr (Run: 2026-05-01T12:32:00Z, ObliviousID: be7bf630-c8b1-42fe-9c64-150f23316f49)
+2026/05/01 20:31:12 Successfully triggered Cloud Run composer for openexr
+2026/05/01 20:31:13 Triggering composer for relic (Run: 2026-05-01T12:32:00Z, ObliviousID: 786ba8f5-1a4c-4cfb-935b-7278c0612d28)
+2026/05/01 20:31:13 Successfully triggered Cloud Run composer for relic
+2026/05/01 20:31:13 Triggering composer for libssh2 (Run: 2026-05-01T12:32:00Z, ObliviousID: da20a1df-b32a-4b7f-8ac3-326d2729ab24)
+2026/05/01 20:31:14 Successfully triggered Cloud Run composer for libssh2
+2026/05/01 20:31:14 Triggering composer for libplist (Run: 2026-05-01T12:32:00Z, ObliviousID: ce3a4261-9b3b-409d-a7d0-60c34e6a2abb)
+2026/05/01 20:31:14 Successfully triggered Cloud Run composer for libplist
+2026/05/01 20:31:14 Triggering composer for liblouis (Run: 2026-05-01T12:32:00Z, ObliviousID: 82b031eb-97eb-4ffc-b419-b0b508b3ed4d)
+2026/05/01 20:31:15 Successfully triggered Cloud Run composer for liblouis
+2026/05/01 20:31:15 Triggering composer for shaderc (Run: 2026-05-01T06:31:47Z, ObliviousID: dde6dccf-f3ce-45c8-8ccc-11d7fb0fa8a8)
+2026/05/01 20:31:15 Successfully triggered Cloud Run composer for shaderc
+2026/05/01 20:31:15 Triggering composer for gdal (Run: 2026-05-01T06:31:47Z, ObliviousID: cbf2a514-41f4-461d-bb83-f479fe08d391)
+2026/05/01 20:31:16 Successfully triggered Cloud Run composer for gdal
+2026/05/01 20:31:16 Triggering composer for wamr (Run: 2026-05-01T06:31:47Z, ObliviousID: d4fbd63a-cc6a-4e32-9a6f-d43e8376890b)
+2026/05/01 20:31:16 Successfully triggered Cloud Run composer for wamr
+2026/05/01 20:31:16 Triggering composer for wasm3 (Run: 2026-05-01T06:31:47Z, ObliviousID: 615ec21e-2247-4f14-bba4-e3ae521de9ae)
+2026/05/01 20:31:17 Successfully triggered Cloud Run composer for wasm3
+2026/05/01 20:31:17 Triggering composer for selinux (Run: 2026-05-01T06:31:47Z, ObliviousID: 49b7677d-f779-47a4-a2e9-1ba3ec5679c6)
+2026/05/01 20:31:17 Successfully triggered Cloud Run composer for selinux
+2026/05/01 20:31:17 Triggering composer for relic (Run: 2026-05-01T06:31:47Z, ObliviousID: 8237c595-27c0-436f-970f-dca1240f6c22)
+2026/05/01 20:31:18 Successfully triggered Cloud Run composer for relic
+2026/05/01 20:31:18 Triggering composer for readstat (Run: 2026-05-01T06:31:47Z, ObliviousID: b7594aba-b25c-4462-999e-19e6ff66bb21)
+2026/05/01 20:31:18 Successfully triggered Cloud Run composer for readstat
+2026/05/01 20:31:18 Triggering composer for unit (Run: 2026-05-01T06:31:47Z, ObliviousID: c9832c38-492c-4c3e-8f2c-806a1fb93929)
+2026/05/01 20:31:19 Successfully triggered Cloud Run composer for unit
+2026/05/01 20:31:19 Triggering composer for rapidjson (Run: 2026-05-01T06:31:47Z, ObliviousID: 513f9c63-2e38-4bbd-ba81-4da622a99b84)
+2026/05/01 20:31:19 Successfully triggered Cloud Run composer for rapidjson
+2026/05/01 20:31:19 Triggering composer for quickjs (Run: 2026-05-01T06:31:47Z, ObliviousID: c1b8ef92-7be7-406f-bfc8-d23bb086ec80)
+2026/05/01 20:31:20 Successfully triggered Cloud Run composer for quickjs
+2026/05/01 20:31:20 Triggering composer for tinyusb (Run: 2026-05-01T06:31:47Z, ObliviousID: a2c32ce3-2560-4768-b67a-2edc8f206962)
+2026/05/01 20:31:20 Successfully triggered Cloud Run composer for tinyusb
+2026/05/01 20:31:21 Triggering composer for pcre2 (Run: 2026-05-01T06:31:47Z, ObliviousID: e7be8771-b8fc-499e-a217-b6f07f7ffecc)
+2026/05/01 20:31:21 Successfully triggered Cloud Run composer for pcre2
+2026/05/01 20:31:21 Triggering composer for openexr (Run: 2026-05-01T06:31:47Z, ObliviousID: 9b73a27d-1f5a-4f5f-82b0-1b834f640871)
+2026/05/01 20:31:22 Successfully triggered Cloud Run composer for openexr
+2026/05/01 20:31:22 Triggering composer for openbabel (Run: 2026-05-01T06:31:47Z, ObliviousID: 5368ef81-7779-4611-8bef-23e8952bfd17)
+2026/05/01 20:31:22 Successfully triggered Cloud Run composer for openbabel
+2026/05/01 20:31:22 Triggering composer for ox-ruby (Run: 2026-05-01T06:31:47Z, ObliviousID: 5f9199f8-bd22-4a24-af4b-ef6643864261)
+2026/05/01 20:31:23 Successfully triggered Cloud Run composer for ox-ruby
+2026/05/01 20:31:23 Triggering composer for openssl (Run: 2026-05-01T06:31:47Z, ObliviousID: 2eaa035d-86b4-4110-a4fb-275db220668e)
+2026/05/01 20:31:23 Successfully triggered Cloud Run composer for openssl
+2026/05/01 20:31:24 Triggering composer for ntopng (Run: 2026-05-01T06:31:47Z, ObliviousID: 1d87f895-a628-458f-9cc5-337806ede02d)
+2026/05/01 20:31:24 Successfully triggered Cloud Run composer for ntopng
+2026/05/01 20:31:24 Triggering composer for njs (Run: 2026-05-01T06:31:47Z, ObliviousID: 6da28560-4fdb-45e1-85f7-bfdbe19fcb64)
+2026/05/01 20:31:24 Successfully triggered Cloud Run composer for njs
+2026/05/01 20:31:25 Triggering composer for matio (Run: 2026-05-01T06:31:47Z, ObliviousID: 25df98dd-9a6d-46c9-98f4-bf0349de0464)
+2026/05/01 20:31:25 Successfully triggered Cloud Run composer for matio
+2026/05/01 20:31:25 Triggering composer for libplist (Run: 2026-05-01T06:31:47Z, ObliviousID: 3414f22a-9da4-457d-8f0d-3b61505d0d7b)
+2026/05/01 20:31:25 Successfully triggered Cloud Run composer for libplist
+2026/05/01 20:31:26 Triggering composer for liblouis (Run: 2026-05-01T06:31:47Z, ObliviousID: 9457eb47-8af8-42e7-ab82-cd890e5321cf)
+2026/05/01 20:31:26 Successfully triggered Cloud Run composer for liblouis
+2026/05/01 20:31:26 Triggering composer for libssh2 (Run: 2026-05-01T06:31:47Z, ObliviousID: acb14aa1-b91b-4534-a8a5-5569ee5c307a)
+2026/05/01 20:31:26 Successfully triggered Cloud Run composer for libssh2
+2026/05/01 20:31:27 Triggering composer for libdwarf (Run: 2026-05-01T06:31:47Z, ObliviousID: 8cfff709-8ce5-4eeb-a264-d62bc8401517)
+2026/05/01 20:31:27 Successfully triggered Cloud Run composer for libdwarf
+2026/05/01 20:31:27 Triggering composer for libconfig (Run: 2026-05-01T06:31:47Z, ObliviousID: d3963579-c833-4b3b-9dc6-c7e6163291b5)
+2026/05/01 20:31:27 Successfully triggered Cloud Run composer for libconfig
+2026/05/01 20:31:28 Triggering composer for libbpf (Run: 2026-05-01T06:31:47Z, ObliviousID: 583b1da7-ceb8-44a1-bc9c-571b6795ff28)
+2026/05/01 20:31:28 Successfully triggered Cloud Run composer for libbpf
+2026/05/01 20:31:28 Triggering composer for libavc (Run: 2026-05-01T06:31:47Z, ObliviousID: c502e87f-c9be-4f78-9f7e-360105921f8b)
+2026/05/01 20:31:28 Successfully triggered Cloud Run composer for libavc
+2026/05/01 20:31:29 Triggering composer for libarchive (Run: 2026-05-01T06:31:47Z, ObliviousID: 422d96d0-01bb-446d-ad5d-789653f42e00)
+2026/05/01 20:31:29 Successfully triggered Cloud Run composer for libarchive
+2026/05/01 20:31:29 Triggering composer for libheif (Run: 2026-05-01T06:31:47Z, ObliviousID: 91af9e2d-73dc-4cf5-82a6-171d185df91d)
+2026/05/01 20:31:29 Successfully triggered Cloud Run composer for libheif
+2026/05/01 20:31:30 Triggering composer for iperf (Run: 2026-05-01T06:31:47Z, ObliviousID: 8f4570eb-4ba4-4613-a7e6-acf3f6cb19c4)
+2026/05/01 20:31:30 Successfully triggered Cloud Run composer for iperf
+2026/05/01 20:31:30 Triggering composer for grok (Run: 2026-05-01T06:31:47Z, ObliviousID: 00876c98-816b-4623-b851-122730e51490)
+2026/05/01 20:31:31 Successfully triggered Cloud Run composer for grok
+2026/05/01 20:31:31 Triggering composer for frr (Run: 2026-05-01T06:31:47Z, ObliviousID: 3563895b-6a20-4dac-8dcc-600e72003803)
+2026/05/01 20:31:31 Successfully triggered Cloud Run composer for frr
+2026/05/01 20:31:31 Triggering composer for flex (Run: 2026-05-01T06:31:47Z, ObliviousID: a2a21109-6727-411d-823c-a82c277185ed)
+2026/05/01 20:31:32 Successfully triggered Cloud Run composer for flex
+2026/05/01 20:31:32 Triggering composer for fio (Run: 2026-05-01T06:31:47Z, ObliviousID: 1e4d1413-ed93-4362-844e-61f927e06259)
+2026/05/01 20:31:32 Successfully triggered Cloud Run composer for fio
+2026/05/01 20:31:32 Triggering composer for exiv2 (Run: 2026-05-01T06:31:47Z, ObliviousID: a30a7de8-3cc5-4ce3-b8d7-fa1bd248e5ff)
+2026/05/01 20:31:32 Successfully triggered Cloud Run composer for exiv2
+2026/05/01 20:31:33 Triggering composer for c-blosc2 (Run: 2026-05-01T06:31:47Z, ObliviousID: 3bf8bfad-8a1b-4598-81b0-d9bba0c6e078)
+2026/05/01 20:31:33 Successfully triggered Cloud Run composer for c-blosc2
+2026/05/01 20:31:33 Triggering composer for cairo (Run: 2026-05-01T06:31:47Z, ObliviousID: 3ccb4294-2a69-43fb-8e6d-f5851cef4a7e)
+2026/05/01 20:31:33 Successfully triggered Cloud Run composer for cairo
+2026/05/01 20:31:34 Triggering composer for bios-bmc-smm-error-logger (Run: 2026-05-01T06:31:47Z, ObliviousID: b7cc442e-8c7a-490a-9632-a3636de75112)
+2026/05/01 20:31:34 Successfully triggered Cloud Run composer for bios-bmc-smm-error-logger
+2026/05/01 20:31:34 Triggering composer for assimp (Run: 2026-05-01T06:31:47Z, ObliviousID: 67936c89-d720-4231-afe9-14b0247c4cc3)
+2026/05/01 20:31:34 Successfully triggered Cloud Run composer for assimp
+2026/05/01 20:31:35 Triggering composer for llvm (Run: 2026-05-01T00:32:36Z, ObliviousID: 94e6481d-9f82-4bc2-98ab-9ed8acf89d66)
+2026/05/01 20:31:35 Successfully triggered Cloud Run composer for llvm
+2026/05/01 20:31:35 Triggering composer for kde-thumbnailers (Run: 2026-05-01T00:32:36Z, ObliviousID: 73e21336-ea94-4087-851f-49cda10e87db)
+2026/05/01 20:31:35 Successfully triggered Cloud Run composer for kde-thumbnailers
+2026/05/01 20:31:36 Triggering composer for gdal (Run: 2026-05-01T00:32:36Z, ObliviousID: 9bfc8c47-53f3-4b6d-94c4-85200ccfadb6)
+2026/05/01 20:31:36 Successfully triggered Cloud Run composer for gdal
+2026/05/01 20:31:37 Triggering composer for shaderc (Run: 2026-05-01T00:32:36Z, ObliviousID: f9d490fb-4761-4975-98c9-dd05556dedd1)
+2026/05/01 20:31:37 Successfully triggered Cloud Run composer for shaderc
+2026/05/01 20:31:37 Triggering composer for njs (Run: 2026-05-01T00:32:36Z, ObliviousID: a4aa39e0-531e-4f67-a6e3-960d8bc2b71f)
+2026/05/01 20:31:37 Successfully triggered Cloud Run composer for njs
+2026/05/01 20:31:38 Triggering composer for quickjs (Run: 2026-05-01T00:32:36Z, ObliviousID: b90674ea-fac9-4ae5-8751-5ca8e4856678)
+2026/05/01 20:31:38 Successfully triggered Cloud Run composer for quickjs
+2026/05/01 20:31:38 Triggering composer for pcre2 (Run: 2026-05-01T00:32:36Z, ObliviousID: 7549c4d1-c6c5-417a-8359-b2f806bd83ba)
+2026/05/01 20:31:38 Successfully triggered Cloud Run composer for pcre2
+2026/05/01 20:31:39 Triggering composer for openexr (Run: 2026-05-01T00:32:36Z, ObliviousID: 5088455b-da5d-43a2-8069-1b1a80be94fe)
+2026/05/01 20:31:39 Successfully triggered Cloud Run composer for openexr
+2026/05/01 20:31:39 Triggering composer for openbabel (Run: 2026-05-01T00:32:36Z, ObliviousID: accbe781-70a7-4bba-8c0f-3e7f77098a46)
+2026/05/01 20:31:39 Successfully triggered Cloud Run composer for openbabel
+2026/05/01 20:31:40 Triggering composer for ntopng (Run: 2026-05-01T00:32:36Z, ObliviousID: 593a9fe1-fe06-42ec-b19d-f2fe00eed32a)
+2026/05/01 20:31:40 Successfully triggered Cloud Run composer for ntopng
+2026/05/01 20:31:40 Triggering composer for ox-ruby (Run: 2026-05-01T00:32:36Z, ObliviousID: aa432b79-591a-4b36-9fee-bbb2d15c97ee)
+2026/05/01 20:31:40 Successfully triggered Cloud Run composer for ox-ruby
+2026/05/01 20:31:41 Triggering composer for wasm3 (Run: 2026-05-01T00:32:36Z, ObliviousID: 8273b673-c927-4af8-b0a3-bd01e19f732f)
+2026/05/01 20:31:41 Successfully triggered Cloud Run composer for wasm3
+2026/05/01 20:31:41 Triggering composer for wamr (Run: 2026-05-01T00:32:36Z, ObliviousID: 1b8e98a8-450d-4bd1-b440-568e6e98d436)
+2026/05/01 20:31:41 Successfully triggered Cloud Run composer for wamr
+2026/05/01 20:31:42 Triggering composer for matio (Run: 2026-05-01T00:32:36Z, ObliviousID: 4610e94d-21e2-4665-bcee-c204bbd9f9da)
+2026/05/01 20:31:42 Successfully triggered Cloud Run composer for matio
+2026/05/01 20:31:42 Triggering composer for unit (Run: 2026-05-01T00:32:36Z, ObliviousID: 0e0fb417-a80e-4419-b05d-ff835ef844f1)
+2026/05/01 20:31:42 Successfully triggered Cloud Run composer for unit
+2026/05/01 20:31:43 Triggering composer for tinyusb (Run: 2026-05-01T00:32:36Z, ObliviousID: b4f4b468-f8a5-40bb-a2bd-8e90d82089be)
+2026/05/01 20:31:43 Successfully triggered Cloud Run composer for tinyusb
+2026/05/01 20:31:43 Triggering composer for rapidjson (Run: 2026-05-01T00:32:36Z, ObliviousID: 8c35c823-391d-4431-9b6f-d4a5adb66648)
+2026/05/01 20:31:43 Successfully triggered Cloud Run composer for rapidjson
+2026/05/01 20:31:44 Triggering composer for selinux (Run: 2026-05-01T00:32:36Z, ObliviousID: 0f6127eb-c412-4cc1-83b3-615972f39ee9)
+2026/05/01 20:31:44 Successfully triggered Cloud Run composer for selinux
+2026/05/01 20:31:44 Triggering composer for relic (Run: 2026-05-01T00:32:36Z, ObliviousID: 28dfa0ba-e542-4fa2-a751-73884d297cba)
+2026/05/01 20:31:44 Successfully triggered Cloud Run composer for relic
+2026/05/01 20:31:45 Triggering composer for readstat (Run: 2026-05-01T00:32:36Z, ObliviousID: 635edddd-00e5-4651-9909-66318f68ccaf)
+2026/05/01 20:31:45 Successfully triggered Cloud Run composer for readstat
+2026/05/01 20:31:45 Triggering composer for libssh2 (Run: 2026-05-01T00:32:36Z, ObliviousID: 50811ef0-dbff-439c-a1ab-8a2e50dcd8e4)
+2026/05/01 20:31:45 Successfully triggered Cloud Run composer for libssh2
+2026/05/01 20:31:46 Triggering composer for liblouis (Run: 2026-05-01T00:32:36Z, ObliviousID: cadd02bc-efc4-4a60-83fb-9d842b8cbc6c)
+2026/05/01 20:31:46 Successfully triggered Cloud Run composer for liblouis
+2026/05/01 20:31:46 Triggering composer for libheif (Run: 2026-05-01T00:32:36Z, ObliviousID: 0bf5dd27-f638-4fe0-9582-f2b4aa40c6fd)
+2026/05/01 20:31:46 Successfully triggered Cloud Run composer for libheif
+2026/05/01 20:31:47 Triggering composer for libdwarf (Run: 2026-05-01T00:32:36Z, ObliviousID: c84f6e5c-32a1-4c7c-a40b-f94b3de76f89)
+2026/05/01 20:31:47 Successfully triggered Cloud Run composer for libdwarf
+2026/05/01 20:31:47 Triggering composer for libconfig (Run: 2026-05-01T00:32:36Z, ObliviousID: 2469d1a1-37d1-4382-826f-7cedf799e322)
+2026/05/01 20:31:48 Successfully triggered Cloud Run composer for libconfig
+2026/05/01 20:31:48 Triggering composer for libbpf (Run: 2026-05-01T00:32:36Z, ObliviousID: 1c76540e-6fbb-495e-8c47-5a1b75870dc1)
+2026/05/01 20:31:48 Successfully triggered Cloud Run composer for libbpf
+2026/05/01 20:31:48 Triggering composer for libavc (Run: 2026-05-01T00:32:36Z, ObliviousID: f5a08c45-5cd5-4163-a557-997581f0fa19)
+2026/05/01 20:31:49 Successfully triggered Cloud Run composer for libavc
+2026/05/01 20:31:49 Triggering composer for libarchive (Run: 2026-05-01T00:32:36Z, ObliviousID: 6610ae4d-bb51-4a27-9ee4-14f618ba1603)
+2026/05/01 20:31:49 Successfully triggered Cloud Run composer for libarchive
+2026/05/01 20:31:49 Triggering composer for iperf (Run: 2026-05-01T00:32:36Z, ObliviousID: 74d6ff59-b3f7-4143-afc4-f0c1b32dabc0)
+2026/05/01 20:31:50 Successfully triggered Cloud Run composer for iperf
+2026/05/01 20:31:50 Triggering composer for grok (Run: 2026-05-01T00:32:36Z, ObliviousID: bc6c8853-33e0-4c7f-b348-919db3a15c9a)
+2026/05/01 20:31:50 Successfully triggered Cloud Run composer for grok
+2026/05/01 20:31:50 Triggering composer for frr (Run: 2026-05-01T00:32:36Z, ObliviousID: 724c55df-2a39-4077-9ec2-f1bf591945d9)
+2026/05/01 20:31:51 Successfully triggered Cloud Run composer for frr
+2026/05/01 20:31:51 Triggering composer for flex (Run: 2026-05-01T00:32:36Z, ObliviousID: cbdb1a35-db51-4e3b-a115-8133c263b500)
+2026/05/01 20:31:51 Successfully triggered Cloud Run composer for flex
+2026/05/01 20:31:51 Triggering composer for fio (Run: 2026-05-01T00:32:36Z, ObliviousID: 8e1949e9-a015-4bf4-a87e-892a778e0e4c)
+2026/05/01 20:31:52 Successfully triggered Cloud Run composer for fio
+2026/05/01 20:31:52 Triggering composer for exiv2 (Run: 2026-05-01T00:32:36Z, ObliviousID: e75d35ff-02c6-4b63-8f3c-b6a953befabf)
+2026/05/01 20:31:52 Successfully triggered Cloud Run composer for exiv2
+2026/05/01 20:31:52 Triggering composer for c-blosc2 (Run: 2026-05-01T00:32:36Z, ObliviousID: d246c704-53e9-42e8-8fa8-7d5ac64c3409)
+2026/05/01 20:31:53 Successfully triggered Cloud Run composer for c-blosc2
+2026/05/01 20:31:53 Triggering composer for cairo (Run: 2026-05-01T00:32:36Z, ObliviousID: 42325f57-7dbe-49fc-91dc-315cbc4a9317)
+2026/05/01 20:31:53 Successfully triggered Cloud Run composer for cairo
+2026/05/01 20:31:53 Triggering composer for bios-bmc-smm-error-logger (Run: 2026-05-01T00:32:36Z, ObliviousID: 5a494dd7-2901-4402-91a5-b5c15e4e59a3)
+2026/05/01 20:31:54 Successfully triggered Cloud Run composer for bios-bmc-smm-error-logger
+2026/05/01 20:31:54 Triggering composer for assimp (Run: 2026-05-01T00:32:36Z, ObliviousID: fee1ba5e-9559-4d66-a7ab-b807f247c4ed)
+2026/05/01 20:31:54 Successfully triggered Cloud Run composer for assimp
+2026/05/01 20:31:54 Nanny task completed.
++ echo 'Cron others task completed.'
+Cron others task completed.
